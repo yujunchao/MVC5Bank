@@ -20,10 +20,32 @@ namespace MVC5Bank.Controllers
             repo客戶資料 = RepositoryHelper.Get客戶資料Repository();
         }
 
+        public ActionResult Order(string order)
+        {
+            if (!string.IsNullOrEmpty(order))
+            {
+                return View("Index", repo客戶資料.Order(order));
+            }
+            return View("Index", repo客戶資料.All().ToList());
+
+
+        }
         // GET: 客戶資料
         public ActionResult Index()
         {
             return View(repo客戶資料.All().ToList());
+        }
+        [HttpPost]
+        public ActionResult Index(string keyword)
+        {
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                return View(repo客戶資料.Classification(keyword));
+            }
+
+            return View(repo客戶資料.All().ToList());
+
+
         }
 
         // GET: 客戶資料/Details/5

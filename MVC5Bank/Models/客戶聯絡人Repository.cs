@@ -12,7 +12,7 @@ namespace MVC5Bank.Models
         }
         public 客戶聯絡人 Find(int id)
         {
-            return this.All().FirstOrDefault(p => p.Id == id);
+            return this.All().FirstOrDefault(p => p.Id == id && p.Stat != false);
         }
     }
 

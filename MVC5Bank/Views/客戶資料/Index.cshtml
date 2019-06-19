@@ -9,75 +9,89 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<p>
-    @using (Html.BeginForm())
-    {
+@{ Html.BeginForm("Index", "客戶資料", FormMethod.Post); }
+@{ List<SelectListItem> DDLList = new List<SelectListItem>();
 
-    }
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.客戶名稱)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.統一編號)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.電話)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.傳真)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.地址)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>       
-        <th>
-            @Html.DisplayNameFor(model => model.客戶分類)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.帳號)
-        </th>
+    DDLList.AddRange(new[]{
+new SelectListItem() {Text = "客戶", Value = "客戶", Selected = false},
+new SelectListItem() {Text = "廠商", Value = "廠商", Selected = false}
+});
 
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.客戶名稱)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.統一編號)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.電話)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.傳真)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.地址)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>      
-        <td>
-            @Html.DisplayFor(modelItem => item.客戶分類)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.帳號)
-        </td>
-
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
 }
+    客戶分類：@Html.DropDownList("keyword", DDLList, "", new { @class = "form-control" })
 
-</table>
+    <input type="submit" value="搜尋" />
+    @{ Html.EndForm(); }
+    <p>
+        @using (Html.BeginForm())
+        {
+
+        }
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "客戶名稱 ASC" }, null)@Html.DisplayNameFor(model => model.客戶名稱)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "客戶名稱 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "統一編號 ASC" }, null)@Html.DisplayNameFor(model => model.統一編號)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "客戶名稱 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "電話 ASC" }, null)@Html.DisplayNameFor(model => model.電話)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "電話 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "傳真 ASC" }, null)@Html.DisplayNameFor(model => model.傳真)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "傳真 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "地址 ASC" }, null)@Html.DisplayNameFor(model => model.地址)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "地址 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "Email ASC" }, null)@Html.DisplayNameFor(model => model.Email)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "Email DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "客戶分類 ASC" }, null)@Html.DisplayNameFor(model => model.客戶分類)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "客戶分類 DESC" }, null)
+            </th>
+            <th>
+                @Html.ActionLink("▲", "Order", "客戶資料", new { order = "帳號 ASC" }, null)@Html.DisplayNameFor(model => model.帳號)@Html.ActionLink("▼", "Order", "客戶資料", new { order = "帳號 DESC" }, null)
+            </th>
+
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.客戶名稱)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.統一編號)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.電話)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.傳真)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.地址)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.客戶分類)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.帳號)
+                </td>
+
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>

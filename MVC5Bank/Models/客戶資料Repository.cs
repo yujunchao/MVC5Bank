@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Collections.Generic;
 	
 namespace MVC5Bank.Models
@@ -12,7 +13,19 @@ namespace MVC5Bank.Models
         }
         public 客戶資料 Find(int id)
         {
-            return this.All().FirstOrDefault(p => p.Id == id);
+            return this.All().FirstOrDefault(p => p.Id == id && p.Stat!= false);
+        }
+        public IQueryable<客戶資料> Classification(String Keyword)
+        {
+            return this.All().Where(p => p.客戶分類 == Keyword && p.Stat != false);
+        }
+        public IQueryable<客戶資料> Order(string keyword)
+        {
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                return this.All().OrderBy(keyword);
+            }
+            return this.All();
         }
     }
 
