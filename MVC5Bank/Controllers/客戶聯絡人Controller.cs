@@ -7,18 +7,29 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using MVC5Bank.Models;
+using MVC5Bank.ViewModels;
+using X.PagedList;
 
 namespace MVC5Bank.Controllers
 {
     public class 客戶聯絡人Controller : Controller
     {
         private 客戶資料Entities db = new 客戶資料Entities();
+        private int pageSize = 3;
 
         // GET: 客戶聯絡人
-        public ActionResult Index()
+        public ActionResult Index(int? page,int?客戶Id)
         {
             var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
-            return View(客戶聯絡人.ToList());
+            var pageNum = page ?? 1;
+            
+            if (客戶Id.HasValue)
+            {
+                客戶聯絡人 = 客戶聯絡人.Where(p => p.客戶Id == 客戶Id);
+                return PartialView(客戶聯絡人.ToList());
+            }
+            var onePageOfProducts = 客戶聯絡人.OrderBy(p => p.Id).ToPagedList(pageNum, pageSize);
+            return View(onePageOfProducts);
         }
 
         // GET: 客戶聯絡人/Details/5
@@ -119,7 +130,17 @@ namespace MVC5Bank.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+        public ActionResult Batch(ContactVM contactVM)
+        {
 
+            return View();
+        }
+        //[HttpPost]
+        //public ActionResult Batch(ContactVM contactVM)
+        //{
+
+        //    return View();
+        //}
         protected override void Dispose(bool disposing)
         {
             if (disposing)

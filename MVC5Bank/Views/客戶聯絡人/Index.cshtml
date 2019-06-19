@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<MVC5Bank.Models.客戶聯絡人>
+@using X.PagedList.Mvc;
+@using X.PagedList;
 
 @{
     ViewBag.Title = "Index";
@@ -9,6 +11,7 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@*@Html.PagedListPager((IPagedList)Model,page=>Url.Action("Index",new { page}))*@
 <table class="table">
     <tr>
         <th>
