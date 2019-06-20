@@ -10,7 +10,7 @@ using MVC5Bank.Models;
 
 namespace MVC5Bank.Controllers
 {
-    public class 客戶檢視表Controller : Controller
+    public class 客戶檢視表Controller : BaseController
     {
         private 客戶資料Entities db = new 客戶資料Entities();
 

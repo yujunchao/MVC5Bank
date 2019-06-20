@@ -8,6 +8,20 @@
 
 <p>
     @Html.ActionLink("Create New", "Create")
+    <button class="btn btn-primary" id="ButtonExport" name="ButtonExport">
+        匯出
+    </button>
+    <div class="well">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#UploadModal">
+            匯入
+        </button>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            HasData: '@Url.Action("HasData", "客戶資料")',
+                ExportData: '@Url.Action("Export", "客戶資料")',
+        })
+    </script>
 </p>
 @{ Html.BeginForm("Index", "客戶資料", FormMethod.Post); }
 @{ List<SelectListItem> DDLList = new List<SelectListItem>();
@@ -95,3 +109,22 @@ new SelectListItem() {Text = "廠商", Value = "廠商", Selected = false}
         }
 
     </table>
+    @Html.Partial("_UploadFile")
+    @section scripts
+{
+        <script src="~/Scripts/bootbox.js"></script>
+        <script src="~/Scripts/jquery.form.js></script>
+        <script src="~/Scripts/project.js"></script>
+        <script src="~/Scripts/project.extends.js"></script>
+        <script src="~/Scripts/project.ZipCode.js"></script>
+        <script type="text/html">
+            $(document).ready(function(){
+            var actionUrls = {
+            Upload: '@Url.Action("Upload","客戶資料")'
+            };
+            project.ZipCode.Initialize(actionUrls);
+            });
+        </script>
+
+
+    }

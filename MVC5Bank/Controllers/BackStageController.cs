@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace MVC5Bank.Controllers
 {
-    public class BackStageController : Controller
+    public class BackStageController : BaseController
     {
         客戶資料Repository repo客戶資料 = RepositoryHelper.Get客戶資料Repository();
         // GET: BackStage
