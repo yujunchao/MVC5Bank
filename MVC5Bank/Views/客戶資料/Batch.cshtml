@@ -7,7 +7,7 @@
 
 <h2>客戶聯絡人清單</h2>
 
-
+@using (Html.BeginForm("BatchUpdate", "客戶資料",new { id = ViewContext.RouteData.Values["id"].ToString()})) {
 <table class="table">
     <tr>
         <th>
@@ -31,29 +31,38 @@
         </th>       
     </tr>
 
-@foreach (var item in Model) {
+    @{ 
+        var data = Model.ToArray();
+    }
+
+@for (int i = 0, max = data.Length; i < max; i++)
+ {
+    @Html.HiddenFor(modelitem => data[i].Id)
     <tr>
+
         <td>
-            @Html.DisplayFor(modelItem => item.職稱)
+            @Html.DisplayFor(modelItem => data[i].姓名)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.姓名)
+            @Html.DisplayFor(modelItem => data[i].Email)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Email)
+            @Html.EditorFor(modelItem => data[i].職稱)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.手機)
+            @Html.EditorFor(modelItem => data[i].手機)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.電話)
+            @Html.EditorFor(modelItem => data[i].電話)
         </td>
 
         <td>
-            @Html.DisplayFor(modelItem => item.客戶資料.客戶名稱)
+            @Html.DisplayFor(modelItem => data[i].客戶資料.客戶名稱)
         </td>
-       
+
     </tr>
 }
 
 </table>
+    <input type="submit" value="批次更新" class="btn btn-primary" />
+}

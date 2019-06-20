@@ -10,6 +10,7 @@ using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
 using MVC5Bank.Models;
+using MVC5Bank.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,9 +20,11 @@ namespace MVC5Bank.Controllers
     {
         //private 客戶資料Entities db = new 客戶資料Entities();
         客戶資料Repository repo客戶資料;
+        客戶聯絡人Repository repo客戶聯絡人;
         public 客戶資料Controller()
         {
             repo客戶資料 = RepositoryHelper.Get客戶資料Repository();
+              repo客戶聯絡人 = RepositoryHelper.Get客戶聯絡人Repository();
         }
 
         public ActionResult Order(string order)
@@ -203,7 +206,7 @@ namespace MVC5Bank.Controllers
             }
 
             客戶資料.密碼 = "";
-            
+
             return View(客戶資料);
         }
 
@@ -212,14 +215,14 @@ namespace MVC5Bank.Controllers
         // 詳細資訊，請參閱 https://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id , FormCollection form)
+        public ActionResult Edit(int id, FormCollection form)
         {
             var 客戶資料 = repo客戶資料.Find(id);
             var oldPW = 客戶資料.密碼;
 
             if (TryUpdateModel(客戶資料))
             {
-                if(!String.IsNullOrEmpty(客戶資料.密碼))
+                if (!String.IsNullOrEmpty(客戶資料.密碼))
                 {
                     客戶資料.PasswordHash();
                 }
@@ -227,7 +230,7 @@ namespace MVC5Bank.Controllers
                 {
                     客戶資料.密碼 = oldPW;
                 }
-                
+
                 repo客戶資料.UnitOfWork.Commit();
                 return RedirectToAction("Index");
             }
@@ -260,13 +263,42 @@ namespace MVC5Bank.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+        public ActionResult BatchUpdate(int? id,IList<ContactVM> data)
         {
-            if (disposing)
+            if (ModelState.IsValid)
             {
-                repo客戶資料.UnitOfWork.Context.Dispose();
+
+                
+                foreach (var item in data)
+                {
+                    var result = repo客戶聯絡人.Find(item.Id);
+                    if (result != null)
+                    {
+                        result.職稱 = item.職稱;
+                        result.電話 = item.電話;
+                        result.手機 = item.手機;
+                    }
+                }
+                repo客戶資料.UnitOfWork.Commit();
+                return RedirectToAction("Details", new { id = id });
             }
-            base.Dispose(disposing);
+            客戶資料 客戶資料 = repo客戶資料.Find(id.Value);
+            if (客戶資料 == null)
+            {
+                return HttpNotFound();
+            }
+            return View("Details",客戶資料);
+
         }
+    
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            repo客戶資料.UnitOfWork.Context.Dispose();
+        }
+        base.Dispose(disposing);
     }
+}
 }

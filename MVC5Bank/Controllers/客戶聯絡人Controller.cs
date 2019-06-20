@@ -130,11 +130,7 @@ namespace MVC5Bank.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-        public ActionResult Batch(ContactVM contactVM)
-        {
 
-            return View();
-        }
         //[HttpPost]
         //public ActionResult Batch(ContactVM contactVM)
         //{
