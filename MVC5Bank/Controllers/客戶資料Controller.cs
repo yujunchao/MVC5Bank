@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
+using BlogSample.Infrastructure.Helpers;
 using MVC5Bank.Models;
 using MVC5Bank.ViewModels;
 using Newtonsoft.Json;
@@ -38,8 +39,56 @@ namespace MVC5Bank.Controllers
 
         }
         private string fileSavedPath = WebConfigurationManager.AppSettings["UploadPath"];
-
         [HttpPost]
+
+        #region --Export--
+        public ActionResult HasData()
+        {
+            JObject jo = new JObject();
+            bool result = repo客戶資料.All().Count().Equals(0);
+            jo.Add("Msg", result.ToString());
+            return Content(JsonConvert.SerializeObject(jo), "application/json");
+
+        }
+        public ActionResult Export()
+        {
+            var exportSpource = this.GetExportData();
+            var dt = JsonConvert.DeserializeObject<DataTable>(exportSpource.ToString());
+
+            var exportFileName = string.Concat(
+                "客戶資料",
+                DateTime.Now.ToString("yyyyMMddHHmmss"),
+                ".xlsx");
+
+            return new ExportExcelResult
+            {
+                SheetName = "客戶資料",
+                FileName = exportFileName,
+                ExportData = dt
+            };
+        }
+
+        private JArray GetExportData()
+        {
+            var query = repo客戶資料.All().ToList();
+
+            JArray jObjects = new JArray();
+
+
+            foreach (var item in query)
+            {
+                var jo = new JObject();
+                jo.Add("ID", item.Id);
+                jo.Add("Zip", item.客戶名稱);
+                jo.Add("CityName", item.地址);
+                jo.Add("Town", item.傳真);
+                jo.Add("Sequence", item.統一編號);
+                jObjects.Add(jo);
+            }
+            return jObjects;
+        }
+        #endregion
+        #region --Upload--
         public ActionResult Upload(HttpPostedFileBase file)
         {
             JObject jo = new JObject();
@@ -135,6 +184,42 @@ namespace MVC5Bank.Controllers
             }
             return result;
         }
+        #endregion
+        #region --Import--
+        [HttpPost]
+        public ActionResult Import(string savedFileName)
+        {
+            var jo = new JObject();
+            string result;
+
+            try
+            {
+                var fileName = string.Concat(Server.MapPath(fileSavedPath), "/", savedFileName);
+
+                var importZipCodes = new List<客戶資料>();
+
+                var helper = new ImportDataHelper();
+                var checkResult = helper.CheckImportData(fileName, importZipCodes);
+
+                jo.Add("Result", checkResult.Success);
+                jo.Add("Msg", checkResult.Success ? string.Empty : checkResult.ErrorMessage);
+
+                if (checkResult.Success)
+                {
+                    //儲存匯入的資料
+                    helper.SaveImportData(importZipCodes);
+                }
+                result = JsonConvert.SerializeObject(jo);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Content(result, "application/json");
+        }
+        #endregion
+
+
         // GET: 客戶資料
         public ActionResult Index()
         {

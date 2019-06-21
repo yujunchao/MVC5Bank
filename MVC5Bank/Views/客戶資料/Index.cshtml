@@ -120,7 +120,10 @@ new SelectListItem() {Text = "廠商", Value = "廠商", Selected = false}
         <script type="text/html">
             $(document).ready(function(){
             var actionUrls = {
-            Upload: '@Url.Action("Upload","客戶資料")'
+            Upload: '@Url.Action("Upload", "客戶資料")',
+            Import:'@Url.Action("Import", "客戶資料")',
+            HasData:'@Url.Action("HasData", "客戶資料")',
+            ExportData:'@Url.Action("Export", "客戶資料")'
             };
             project.ZipCode.Initialize(actionUrls);
             });
