@@ -24,7 +24,7 @@ namespace MVC5Bank.Controllers
         public 客戶資料Controller()
         {
             repo客戶資料 = RepositoryHelper.Get客戶資料Repository();
-              repo客戶聯絡人 = RepositoryHelper.Get客戶聯絡人Repository();
+            repo客戶聯絡人 = RepositoryHelper.Get客戶聯絡人Repository(repo客戶資料.UnitOfWork);
         }
 
         public ActionResult Order(string order)
@@ -263,12 +263,12 @@ namespace MVC5Bank.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult BatchUpdate(int? id,IList<ContactVM> data)
+        public ActionResult BatchUpdate(int? id, IList<ContactVM> data)
         {
             if (ModelState.IsValid)
             {
 
-                
+
                 foreach (var item in data)
                 {
                     var result = repo客戶聯絡人.Find(item.Id);
@@ -279,7 +279,7 @@ namespace MVC5Bank.Controllers
                         result.手機 = item.手機;
                     }
                 }
-                repo客戶資料.UnitOfWork.Commit();
+                repo客戶聯絡人.UnitOfWork.Commit();
                 return RedirectToAction("Details", new { id = id });
             }
             客戶資料 客戶資料 = repo客戶資料.Find(id.Value);
@@ -287,18 +287,18 @@ namespace MVC5Bank.Controllers
             {
                 return HttpNotFound();
             }
-            return View("Details",客戶資料);
+            return View("Details", 客戶資料);
 
         }
-    
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
+
+        protected override void Dispose(bool disposing)
         {
-            repo客戶資料.UnitOfWork.Context.Dispose();
+            if (disposing)
+            {
+                repo客戶資料.UnitOfWork.Context.Dispose();
+            }
+            base.Dispose(disposing);
         }
-        base.Dispose(disposing);
     }
-}
 }

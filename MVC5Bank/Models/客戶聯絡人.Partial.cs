@@ -9,7 +9,7 @@ namespace MVC5Bank.Models
     public partial class 客戶聯絡人
     {
     }
-    
+    [EmailRepeatVerification]
     public partial class 客戶聯絡人MetaData
     {
         [Required]
@@ -27,7 +27,7 @@ namespace MVC5Bank.Models
         
         [StringLength(250, ErrorMessage="欄位長度不得大於 250 個字元")]
         [Required]
-        [EmailRepeatVerification]
+
         public string Email { get; set; }
         
         [StringLength(50, ErrorMessage="欄位長度不得大於 50 個字元")]
