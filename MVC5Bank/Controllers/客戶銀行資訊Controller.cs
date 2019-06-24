@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using MVC5Bank.ActionFilters;
 using MVC5Bank.Models;
 
 namespace MVC5Bank.Controllers
 {
+    [ExcuteTime]
     public class 客戶銀行資訊Controller : BaseController
     {
         private 客戶資料Entities db = new 客戶資料Entities();

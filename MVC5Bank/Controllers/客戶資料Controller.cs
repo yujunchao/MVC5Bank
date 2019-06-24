@@ -5,11 +5,13 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Security;
 using BlogSample.Infrastructure.Helpers;
+using MVC5Bank.ActionFilters;
 using MVC5Bank.Models;
 using MVC5Bank.ViewModels;
 using Newtonsoft.Json;
@@ -17,6 +19,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MVC5Bank.Controllers
 {
+    [ExcuteTime]
     public class 客戶資料Controller : BaseController
     {
         //private 客戶資料Entities db = new 客戶資料Entities();
@@ -52,41 +55,30 @@ namespace MVC5Bank.Controllers
         }
         public ActionResult Export()
         {
-            var exportSpource = this.GetExportData();
-            var dt = JsonConvert.DeserializeObject<DataTable>(exportSpource.ToString());
+            //var exportSpource = this.GetExportData();
+            //var dt = JsonConvert.DeserializeObject<DataTable>(exportSpource.ToString());
 
-            var exportFileName = string.Concat(
-                "客戶資料",
-                DateTime.Now.ToString("yyyyMMddHHmmss"),
-                ".xlsx");
+            //var exportFileName = string.Concat(
+            //    "客戶資料",
+            //    DateTime.Now.ToString("yyyyMMddHHmmss"),
+            //    ".xlsx");
+            //return new ExportExcelResult
+            //{
+            //    SheetName = "客戶資料",
+            //    FileName = exportFileName,
 
-            return new ExportExcelResult
-            {
-                SheetName = "客戶資料",
-                FileName = exportFileName,
-                ExportData = dt
-            };
+            //    ExportData = dt
+            //};
+     
+           
+            DataTable dt = ExcelUtility.ConvertObjectsToDataTable(repo客戶資料.All().
+                Select(x =>new { x.客戶名稱, x.統一編號, x.電話 , x.傳真 , x.地址 , x.Email , x.客戶分類 , x.帳號 }).ToList());
+            System.IO.MemoryStream stream = ExcelUtility.ExportExcelStreamFromDataTable(dt);
+            FileContentResult fResult = new FileContentResult(stream.ToArray(), "application/x-xlsx");
+            fResult.FileDownloadName = "test.xlsx";
+            return fResult;
         }
 
-        private JArray GetExportData()
-        {
-            var query = repo客戶資料.All().ToList();
-
-            JArray jObjects = new JArray();
-
-
-            foreach (var item in query)
-            {
-                var jo = new JObject();
-                jo.Add("ID", item.Id);
-                jo.Add("Zip", item.客戶名稱);
-                jo.Add("CityName", item.地址);
-                jo.Add("Town", item.傳真);
-                jo.Add("Sequence", item.統一編號);
-                jObjects.Add(jo);
-            }
-            return jObjects;
-        }
         #endregion
         #region --Upload--
         public ActionResult Upload(HttpPostedFileBase file)
@@ -225,14 +217,17 @@ namespace MVC5Bank.Controllers
         {
             return View(repo客戶資料.All().ToList());
         }
+        
         [HttpPost]
         public ActionResult Index(string keyword)
         {
             if (!string.IsNullOrEmpty(keyword))
             {
+                System.Diagnostics.Debug.WriteLine(keyword);
                 return View(repo客戶資料.Classification(keyword));
             }
-
+            
+            
             return View(repo客戶資料.All().ToList());
 
 

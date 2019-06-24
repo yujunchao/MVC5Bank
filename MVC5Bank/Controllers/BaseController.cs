@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.Configuration;
@@ -15,91 +16,77 @@ namespace MVC5Bank.Controllers
 {
     public class BaseController : Controller
     {
+
         // GET: Base
-
-        public class ExportExcelResult : ActionResult
+        //轉換成DataTable
+        public class ExcelUtility
         {
-            public string SheetName { get; set; }
-            public string FileName { get; set; }
-            public DataTable ExportData { get; set; }
-
-            public ExportExcelResult()
+            public static DataTable ConvertObjectsToDataTable(IEnumerable<object> objects)
             {
+                DataTable dt = null;
 
-            }
-
-            public override void ExecuteResult(ControllerContext context)
-            {
-                if (ExportData == null)
+                if (objects != null && objects.Count() > 0)
                 {
-                    throw new InvalidDataException("ExportData");
-                }
-                if (string.IsNullOrWhiteSpace(this.SheetName))
-                {
-                    this.SheetName = "Sheet1";
-                }
-                if (string.IsNullOrWhiteSpace(this.FileName))
-                {
-                    this.FileName = string.Concat(
-                        "ExportData_",
-                        DateTime.Now.ToString("yyyyMMddHHmmss"),
-                        ".xlsx");
-                }
+                    Type type = objects.First().GetType();
+                    dt = new DataTable(type.Name);
 
-                this.ExportExcelEventHandler(context);
-            }
-
-            /// <summary>
-            /// Exports the excel event handler.
-            /// </summary>
-            /// <param name="context">The context.</param>
-            private void ExportExcelEventHandler(ControllerContext context)
-            {
-                try
-                {
-                    var workbook = new XLWorkbook();
-
-                    if (this.ExportData != null)
+                    foreach (PropertyInfo property in type.GetProperties())
                     {
-                        context.HttpContext.Response.Clear();
-
-                        // 編碼
-                        context.HttpContext.Response.ContentEncoding = Encoding.UTF8;
-
-                        // 設定網頁ContentType
-                        context.HttpContext.Response.ContentType =
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-                        // 匯出檔名
-                        var browser = context.HttpContext.Request.Browser.Browser;
-                        var exportFileName = browser.Equals("Firefox", StringComparison.OrdinalIgnoreCase)
-                            ? this.FileName
-                            : HttpUtility.UrlEncode(this.FileName, Encoding.UTF8);
-
-                        context.HttpContext.Response.AddHeader(
-                            "Content-Disposition",
-                            string.Format("attachment;filename={0}", exportFileName));
-
-                        // Add all DataTables in the DataSet as a worksheets
-                        workbook.Worksheets.Add(this.ExportData, this.SheetName);
-
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            workbook.SaveAs(memoryStream);
-                            memoryStream.WriteTo(context.HttpContext.Response.OutputStream);
-                            memoryStream.Close();
-                        }
+                        dt.Columns.Add(new DataColumn(property.Name));
                     }
-                    workbook.Dispose();
+
+                    foreach (FieldInfo field in type.GetFields())
+                    {
+                        dt.Columns.Add(new DataColumn(field.Name));
+                    }
+
+                    foreach (object obj in objects)
+                    {
+                        DataRow dr = dt.NewRow();
+                        foreach (DataColumn column in dt.Columns)
+                        {
+                            PropertyInfo propertyInfo = type.GetProperty(column.ColumnName);
+                            if (propertyInfo != null)
+                            {
+                                dr[column.ColumnName] = propertyInfo.GetValue(obj, null);
+                            }
+
+                            FieldInfo fieldInfo = type.GetField(column.ColumnName);
+                            if (fieldInfo != null)
+                            {
+                                dr[column.ColumnName] = fieldInfo.GetValue(obj);
+                            }
+                        }
+                        dt.Rows.Add(dr);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+
+                return dt;
+            }
+
+            public static void ExportExcelFromDataTable(DataTable dt, string fileName)
+            {
+                XLWorkbook workbook = new XLWorkbook();
+                workbook.AddWorksheet(dt, "Sheet1");
+                workbook.SaveAs(fileName);
+                workbook.Dispose();
+            }
+
+            public static MemoryStream ExportExcelStreamFromDataTable(DataTable dt)
+            {
+                MemoryStream memoryStream = new MemoryStream();
+                XLWorkbook workbook = new XLWorkbook();
+                workbook.AddWorksheet(dt, "Sheet1");
+                workbook.SaveAs(memoryStream);
+                workbook.Dispose();
+                return memoryStream;
+            }
+
+            public static byte[] ExportExcelByteArrayFromDataTable(DataTable dt)
+            {
+                byte[] array = ExportExcelStreamFromDataTable(dt).ToArray();
+                return array;
             }
         }
-
-
-
     }
 }

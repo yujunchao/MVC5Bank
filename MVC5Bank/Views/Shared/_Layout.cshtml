@@ -34,6 +34,9 @@
         </div>
     </div>
     <div class="container body-content">
+        
+        目前位置:@Html.MvcSiteMap().SiteMapPath()
+        @RenderSection("featured",required:false)
         @RenderBody()
         <hr />
         <footer>
