@@ -19,6 +19,10 @@ namespace MVC5Bank.Models
         {
             return this.All().Where(p => p.客戶分類 == Keyword && p.Stat != false);
         }
+        public IQueryable<客戶資料> NamenClassification(String Keyword,string name)
+        {
+            return this.All().Where(p => p.客戶分類 == Keyword && p.Stat != false && p.客戶名稱 == name);
+        }
         public IQueryable<客戶資料> Order(string keyword)
         {
             if (!string.IsNullOrEmpty(keyword))

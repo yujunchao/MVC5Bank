@@ -42,8 +42,8 @@ namespace MVC5Bank.Controllers
 
         }
         private string fileSavedPath = WebConfigurationManager.AppSettings["UploadPath"];
-     
-     
+
+
 
         #region --Export--
         public ActionResult HasData()
@@ -70,10 +70,10 @@ namespace MVC5Bank.Controllers
 
             //    ExportData = dt
             //};
-     
-           
+
+
             DataTable dt = ExcelUtility.ConvertObjectsToDataTable(repo客戶資料.All().
-                Select(x =>new { x.客戶名稱, x.統一編號, x.電話 , x.傳真 , x.地址 , x.Email , x.客戶分類 , x.帳號 }).ToList());
+                Select(x => new { x.客戶名稱, x.統一編號, x.電話, x.傳真, x.地址, x.Email, x.客戶分類, x.帳號 }).ToList());
             System.IO.MemoryStream stream = ExcelUtility.ExportExcelStreamFromDataTable(dt);
             FileContentResult fResult = new FileContentResult(stream.ToArray(), "application/x-xlsx");
             fResult.FileDownloadName = "test.xlsx";
@@ -211,24 +211,51 @@ namespace MVC5Bank.Controllers
             return Content(result, "application/json");
         }
         #endregion
+        [HttpPost]
+        public ActionResult GetCustomerName()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            var selection = repo客戶資料.All().Select(x => x.客戶名稱);
+            foreach (var item in selection)
+            {
+                items.AddRange(new[] { new SelectListItem() { Text = item, Value = item, Selected = false } });
+            }
+            
 
+
+
+
+            return this.Json(items);        
+
+
+        }
 
         // GET: 客戶資料
         public ActionResult Index()
         {
             return View(repo客戶資料.All().ToList());
         }
-        
+
         [HttpPost]
-        public ActionResult Index(string keyword)
+        public ActionResult Index(string keyword,string name)
         {
             if (!string.IsNullOrEmpty(keyword))
             {
-                System.Diagnostics.Debug.WriteLine(keyword);
-                return View(repo客戶資料.Classification(keyword));
+                if (!string.IsNullOrEmpty(keyword+name))
+                {
+                    System.Diagnostics.Debug.WriteLine(name);
+                    return View(repo客戶資料.NamenClassification(keyword, name));
+                    
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine(keyword);
+                    return View(repo客戶資料.Classification(keyword));
+                }
+                
             }
-            
-            
+
+
             return View(repo客戶資料.All().ToList());
 
 
