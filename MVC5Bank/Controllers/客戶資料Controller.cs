@@ -42,7 +42,8 @@ namespace MVC5Bank.Controllers
 
         }
         private string fileSavedPath = WebConfigurationManager.AppSettings["UploadPath"];
-        [HttpPost]
+     
+     
 
         #region --Export--
         public ActionResult HasData()

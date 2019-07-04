@@ -8,14 +8,13 @@
 
 <p>
     @Html.ActionLink("Create New", "Create")
-    <button class="btn btn-primary" id="ButtonExport" name="ButtonExport">
-        匯出
-    </button>
+    
     <div class="well">
         <button class="btn btn-primary" data-toggle="modal" data-target="#UploadModal">
-            匯入
+            上傳
         </button>
-    </div>
+        @Html.ActionLink("匯出", "Export", null, new { @class = "btn btn-primary" })
+       </div>
     <script type="text/javascript">
         $(document).ready(function () {
             HasData: '@Url.Action("HasData", "客戶資料")',

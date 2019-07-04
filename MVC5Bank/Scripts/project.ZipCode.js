@@ -21,8 +21,8 @@
             current.UploadEventHandler();
 
             //匯出資料
-            $('#ButtonExport').click(function () {
-                current.ExportDate();
+            $('#UploadForm').click(function () {
+                current.ButtonExport();
             });
         },
 
@@ -103,7 +103,7 @@
                             project.AlertErrorMessage("錯誤", "尚未建立任何資料, 無法匯出資料.");
                         }
                         else {
-                            window.location = project.ActionUrls.ExportData;
+                            window.location = project.ActionUrls.Exporta;
                         }
                     }
                 },

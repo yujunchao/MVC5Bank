@@ -8,7 +8,7 @@
 
     var project = window.project =
     {
-        AppName: 'project',
+        AppName: 'MVC5Bank',
         ActionUrls: {}
     };
 
