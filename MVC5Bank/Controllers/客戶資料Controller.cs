@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -43,7 +44,22 @@ namespace MVC5Bank.Controllers
         }
         private string fileSavedPath = WebConfigurationManager.AppSettings["UploadPath"];
 
+        public ActionResult date()
+        {
+            int weekNumber = 28;
+            DateTime firstDateOfYear = new DateTime(2019, 1, 1);
+            DateTime dayInWeek = firstDateOfYear.AddDays((weekNumber - 1) * 7);
 
+            DateTime firstDayInWeek = dayInWeek.Date;
+            while (firstDayInWeek.DayOfWeek != DayOfWeek.Sunday)
+            {
+                firstDayInWeek = firstDayInWeek.AddDays(-1);
+            }
+
+            DateTime lastModifyDayinWeek = firstDayInWeek.AddDays(5);
+            lastModifyDayinWeek.AddHours(17);
+            return View();
+        }
 
         #region --Export--
         public ActionResult HasData()
@@ -220,11 +236,6 @@ namespace MVC5Bank.Controllers
             {
                 items.AddRange(new[] { new SelectListItem() { Text = item, Value = item, Selected = false } });
             }
-            
-
-
-
-
             return this.Json(items);        
 
 
